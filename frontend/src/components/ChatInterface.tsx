@@ -2,11 +2,26 @@ import { useState, useEffect, useRef } from 'react';
 import { Message, ApologyStyle } from '../types';
 import { MessageBubble } from './MessageBubble';
 import { InputBox } from './InputBox';
-import { sendMessage as sendMessageApi, getHistory } from '../services/api';
+import { SessionList, Session } from './SessionList';
+import { sendMessage as sendMessageApi } from '../services/api';
+import {
+  getSessions,
+  getSession,
+  saveSession,
+  deleteSession as deleteStoredSession,
+  getActiveSessionId,
+  setActiveSessionId,
+  clearActiveSessionId,
+  toSessionListItem,
+  generateSessionName,
+  StoredSession,
+} from '../utils/storage';
+import { v4 as uuidv4 } from 'uuid';
 
 export const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [style, setStyle] = useState<ApologyStyle>('gentle');
@@ -17,21 +32,68 @@ export const ChatInterface: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Load session from localStorage on mount
+  // Load sessions and active session on mount
   useEffect(() => {
-    const savedSessionId = localStorage.getItem('sessionId');
-    if (savedSessionId) {
-      setSessionId(savedSessionId);
-      loadHistory(savedSessionId);
+    loadSessions();
+    const activeId = getActiveSessionId();
+    if (activeId) {
+      loadSession(activeId);
     }
   }, []);
 
-  const loadHistory = async (sid: string) => {
-    try {
-      const history = await getHistory(sid);
-      setMessages(history.messages);
-    } catch (err) {
-      console.error('Failed to load history:', err);
+  // Save current session when messages change
+  useEffect(() => {
+    if (sessionId && messages.length > 0) {
+      const stored = getSession(sessionId);
+      const sessionName = stored?.name || generateSessionName(messages[0].content);
+
+      const updatedSession: StoredSession = {
+        id: sessionId,
+        name: sessionName,
+        messages,
+        createdAt: stored?.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      saveSession(updatedSession);
+      loadSessions();
+    }
+  }, [messages, sessionId]);
+
+  const loadSessions = () => {
+    const stored = getSessions();
+    const sessionList = stored.map(toSessionListItem);
+    sessionList.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    setSessions(sessionList);
+  };
+
+  const loadSession = (sid: string) => {
+    const stored = getSession(sid);
+    if (stored) {
+      setSessionId(sid);
+      setMessages(stored.messages);
+      setActiveSessionId(sid);
+    }
+  };
+
+  const handleNewSession = () => {
+    setSessionId(null);
+    setMessages([]);
+    setError(null);
+    clearActiveSessionId();
+  };
+
+  const handleSelectSession = (sid: string) => {
+    loadSession(sid);
+  };
+
+  const handleDeleteSession = (sid: string) => {
+    deleteStoredSession(sid);
+    loadSessions();
+
+    // If deleting active session, clear it
+    if (sid === sessionId) {
+      handleNewSession();
     }
   };
 
@@ -40,6 +102,13 @@ export const ChatInterface: React.FC = () => {
 
     setIsLoading(true);
     setError(null);
+
+    // Create or use existing session ID
+    const currentSessionId = sessionId || uuidv4();
+    if (!sessionId) {
+      setSessionId(currentSessionId);
+      setActiveSessionId(currentSessionId);
+    }
 
     // Add user message to UI immediately
     const userMessage: Message = {
@@ -54,14 +123,8 @@ export const ChatInterface: React.FC = () => {
       const response = await sendMessageApi({
         message: content,
         style,
-        sessionId: sessionId || undefined,
+        sessionId: currentSessionId,
       });
-
-      // Update session ID if this is first message
-      if (!sessionId) {
-        setSessionId(response.sessionId);
-        localStorage.setItem('sessionId', response.sessionId);
-      }
 
       // Add assistant message
       const assistantMessage: Message = {
@@ -82,10 +145,11 @@ export const ChatInterface: React.FC = () => {
   };
 
   const handleClearHistory = () => {
-    setMessages([]);
-    setSessionId(null);
-    localStorage.removeItem('sessionId');
-    setError(null);
+    if (sessionId) {
+      if (confirm('确定要清空当前会话的历史记录吗？')) {
+        handleNewSession();
+      }
+    }
   };
 
   return (
@@ -103,6 +167,15 @@ export const ChatInterface: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Session list */}
+            <SessionList
+              sessions={sessions}
+              activeSessionId={sessionId}
+              onSelectSession={handleSelectSession}
+              onNewSession={handleNewSession}
+              onDeleteSession={handleDeleteSession}
+            />
+
             {/* Style selector */}
             <div className="flex items-center gap-2">
               <label className="text-sm text-gray-600">风格:</label>
@@ -118,12 +191,14 @@ export const ChatInterface: React.FC = () => {
             </div>
 
             {/* Clear button */}
-            <button
-              onClick={handleClearHistory}
-              className="px-4 py-1.5 text-sm rounded border border-gray-300 hover:bg-gray-50 transition-colors"
-            >
-              清空历史
-            </button>
+            {messages.length > 0 && (
+              <button
+                onClick={handleClearHistory}
+                className="px-4 py-1.5 text-sm rounded border border-gray-300 hover:bg-gray-50 transition-colors"
+              >
+                清空历史
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -135,6 +210,11 @@ export const ChatInterface: React.FC = () => {
             <div className="text-center text-gray-500">
               <p className="text-lg mb-2">👋 你好！</p>
               <p className="text-sm">说说你的感受，我会认真倾听和理解</p>
+              {sessions.length > 0 && (
+                <p className="text-xs mt-4 text-gray-400">
+                  点击右上角"会话列表"查看历史会话
+                </p>
+              )}
             </div>
           </div>
         ) : (
