@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import chatRoutes from './routes/chat.routes.js';
+import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
 
 dotenv.config();
 
@@ -34,8 +36,16 @@ app.get('/api/test', (req, res) => {
   });
 });
 
+// Chat API routes
+app.use('/api/chat', chatRoutes);
+
+// Error handling
+app.use(notFoundHandler);
+app.use(errorHandler);
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Backend server running on http://localhost:${PORT}`);
   console.log(`📝 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`💬 Chat API: http://localhost:${PORT}/api/chat`);
 });
