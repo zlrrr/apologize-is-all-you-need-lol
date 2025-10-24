@@ -3,6 +3,7 @@ import { Message, ApologyStyle } from '../types';
 import { MessageBubble } from './MessageBubble';
 import { InputBox } from './InputBox';
 import { SessionList, Session } from './SessionList';
+import { ApologyCharacter } from './ApologyCharacter';
 import { sendMessage as sendMessageApi } from '../services/api';
 import {
   getSessions,
@@ -223,7 +224,8 @@ export const ChatInterface: React.FC = () => {
               <MessageBubble key={index} message={message} />
             ))}
             {isLoading && (
-              <div className="flex justify-start mb-4">
+              <div className="flex justify-start mb-4 items-end gap-3">
+                <ApologyCharacter isApologizing={true} size={80} className="animate-gentle-pulse" />
                 <div className="bg-gray-200 rounded-2xl rounded-bl-none px-4 py-3">
                   <div className="flex gap-1">
                     <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
