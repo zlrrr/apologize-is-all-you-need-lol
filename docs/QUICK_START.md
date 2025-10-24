@@ -123,10 +123,10 @@ You can test the backend API directly:
 
 ```bash
 # Health check
-curl http://localhost:5000/api/health
+curl http://localhost:5001/api/health
 
 # Send a message
-curl -X POST http://localhost:5000/api/chat/message \
+curl -X POST http://localhost:5001/api/chat/message \
   -H "Content-Type: application/json" \
   -d '{"message": "测试消息", "style": "gentle"}'
 ```

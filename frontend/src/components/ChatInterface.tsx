@@ -158,13 +158,21 @@ export const ChatInterface: React.FC = () => {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              道歉助手
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              我会真诚地理解和支持你
-            </p>
+          <div className="flex items-center gap-4">
+            {/* Continuously visible apology character */}
+            <ApologyCharacter
+              showContinuously={true}
+              size={100}
+              className="flex-shrink-0"
+            />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                道歉助手
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                我会真诚地理解和支持你
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">

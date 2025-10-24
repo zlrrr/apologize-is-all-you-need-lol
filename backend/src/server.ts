@@ -8,7 +8,7 @@ import { errorHandler, notFoundHandler } from './middleware/error.middleware.js'
 dotenv.config();
 
 const app = express();
-const PORT = process.env.BACKEND_PORT || 5000;
+const PORT = process.env.BACKEND_PORT || 5001;
 
 // Middleware
 app.use(cors({

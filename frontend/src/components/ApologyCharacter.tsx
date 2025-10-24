@@ -1,30 +1,92 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface ApologyCharacterProps {
   isApologizing?: boolean;
   size?: number;
   className?: string;
+  showContinuously?: boolean; // New prop for continuous idle animations
 }
+
+// Random animation configurations
+const ANIMATIONS = [
+  { bow: 25, speed: 0.4, message: 'すみません', sweat: true, hearts: true },
+  { bow: 35, speed: 0.3, message: 'ごめんなさい', sweat: true, hearts: false },
+  { bow: 20, speed: 0.5, message: '申し訳ございません', sweat: false, hearts: true },
+  { bow: 30, speed: 0.35, message: 'すみません...', sweat: true, hearts: true },
+  { bow: 40, speed: 0.25, message: 'ごめんね', sweat: false, hearts: false },
+];
+
+// Random idle expressions for variety
+const IDLE_EXPRESSIONS = [
+  { eyeHeight: 70, mouthCurve: 82 }, // Normal
+  { eyeHeight: 68, mouthCurve: 80 }, // Slightly worried
+  { eyeHeight: 72, mouthCurve: 84 }, // Hopeful
+];
 
 export const ApologyCharacter: React.FC<ApologyCharacterProps> = ({
   isApologizing = false,
   size = 120,
   className = '',
+  showContinuously = false,
 }) => {
   const [bowAngle, setBowAngle] = useState(0);
+  const [currentAnimation, setCurrentAnimation] = useState(() =>
+    ANIMATIONS[Math.floor(Math.random() * ANIMATIONS.length)]
+  );
+  const [currentExpression, setCurrentExpression] = useState(() =>
+    IDLE_EXPRESSIONS[Math.floor(Math.random() * IDLE_EXPRESSIONS.length)]
+  );
 
+  // Select random animation configuration
+  const selectRandomAnimation = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * ANIMATIONS.length);
+    setCurrentAnimation(ANIMATIONS[randomIndex]);
+  }, []);
+
+  // Select random expression
+  const selectRandomExpression = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * IDLE_EXPRESSIONS.length);
+    setCurrentExpression(IDLE_EXPRESSIONS[randomIndex]);
+  }, []);
+
+  // Bowing animation effect
   useEffect(() => {
     if (isApologizing) {
-      // Bowing animation: 0 -> 30 -> 0 degrees
-      const bowDown = setTimeout(() => setBowAngle(30), 200);
-      const bowUp = setTimeout(() => setBowAngle(0), 800);
+      // Select a new random animation each time
+      selectRandomAnimation();
+
+      // Bowing animation with random parameters
+      const bowDown = setTimeout(() => setBowAngle(currentAnimation.bow), 200);
+      const bowUp = setTimeout(() => setBowAngle(0), 200 + currentAnimation.speed * 1000);
 
       return () => {
         clearTimeout(bowDown);
         clearTimeout(bowUp);
       };
     }
-  }, [isApologizing]);
+  }, [isApologizing, currentAnimation.bow, currentAnimation.speed, selectRandomAnimation]);
+
+  // Continuous idle animation effect
+  useEffect(() => {
+    if (showContinuously && !isApologizing) {
+      const interval = setInterval(() => {
+        // Randomly change expression
+        selectRandomExpression();
+
+        // Occasionally do a small bow (30% chance)
+        if (Math.random() < 0.3) {
+          selectRandomAnimation();
+          setBowAngle(15); // Small idle bow
+          setTimeout(() => setBowAngle(0), 400);
+        }
+      }, 3000); // Every 3 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [showContinuously, isApologizing, selectRandomAnimation, selectRandomExpression]);
+
+  const showSweat = isApologizing && currentAnimation.sweat;
+  const showHearts = isApologizing && currentAnimation.hearts;
 
   return (
     <div className={`inline-block ${className}`} style={{ width: size, height: size }}>
@@ -36,7 +98,7 @@ export const ApologyCharacter: React.FC<ApologyCharacterProps> = ({
         style={{
           transform: `rotate(${bowAngle}deg)`,
           transformOrigin: '50% 70%',
-          transition: 'transform 0.3s ease-in-out',
+          transition: `transform ${currentAnimation.speed}s ease-in-out`,
         }}
       >
         {/* Body (torso) */}
@@ -50,28 +112,37 @@ export const ApologyCharacter: React.FC<ApologyCharacterProps> = ({
         <circle cx="85" cy="55" r="8" fill="#2C3E50" />
         <circle cx="115" cy="55" r="8" fill="#2C3E50" />
 
-        {/* Face - Eyes (closed, apologetic) */}
+        {/* Face - Eyes (closed, apologetic) - with dynamic expression */}
         <path
-          d="M 88 70 Q 92 73 96 70"
+          d={`M 88 ${currentExpression.eyeHeight} Q 92 ${currentExpression.eyeHeight + 3} 96 ${currentExpression.eyeHeight}`}
           fill="none"
           stroke="#2C3E50"
           strokeWidth="2"
           strokeLinecap="round"
+          style={{ transition: 'all 0.5s ease-in-out' }}
         />
         <path
-          d="M 104 70 Q 108 73 112 70"
+          d={`M 104 ${currentExpression.eyeHeight} Q 108 ${currentExpression.eyeHeight + 3} 112 ${currentExpression.eyeHeight}`}
           fill="none"
           stroke="#2C3E50"
           strokeWidth="2"
           strokeLinecap="round"
+          style={{ transition: 'all 0.5s ease-in-out' }}
         />
 
         {/* Blush */}
         <ellipse cx="80" cy="78" rx="8" ry="4" fill="#FFB6C1" opacity="0.6" />
         <ellipse cx="120" cy="78" rx="8" ry="4" fill="#FFB6C1" opacity="0.6" />
 
-        {/* Mouth (apologetic smile) */}
-        <path d="M 92 82 Q 100 85 108 82" fill="none" stroke="#E85A8A" strokeWidth="2" strokeLinecap="round" />
+        {/* Mouth (apologetic smile) - with dynamic expression */}
+        <path
+          d={`M 92 ${currentExpression.mouthCurve} Q 100 ${currentExpression.mouthCurve + 3} 108 ${currentExpression.mouthCurve}`}
+          fill="none"
+          stroke="#E85A8A"
+          strokeWidth="2"
+          strokeLinecap="round"
+          style={{ transition: 'all 0.5s ease-in-out' }}
+        />
 
         {/* Arms (in bowing position) */}
         <g id="arms">
@@ -100,33 +171,33 @@ export const ApologyCharacter: React.FC<ApologyCharacterProps> = ({
         </g>
 
         {/* Sweat drops (showing nervousness/apology) */}
-        <g id="sweat" opacity={isApologizing ? 1 : 0.3} style={{ transition: 'opacity 0.3s' }}>
+        <g id="sweat" opacity={showSweat ? 1 : 0.3} style={{ transition: 'opacity 0.3s' }}>
           <ellipse cx="75" cy="65" rx="3" ry="5" fill="#87CEEB" />
           <ellipse cx="125" cy="68" rx="3" ry="5" fill="#87CEEB" />
         </g>
 
-        {/* Apology text */}
+        {/* Apology text - with random message */}
         {isApologizing && (
           <g id="speech-bubble" opacity="0.95">
-            <ellipse cx="140" cy="40" rx="32" ry="20" fill="white" stroke="#E85A8A" strokeWidth="2" />
+            <ellipse cx="140" cy="40" rx="38" ry="20" fill="white" stroke="#E85A8A" strokeWidth="2" />
             <path d="M 125 48 L 115 55 L 120 48 Z" fill="white" stroke="#E85A8A" strokeWidth="2" />
             <text
               x="140"
               y="45"
               fontFamily="Arial, sans-serif"
-              fontSize="14"
+              fontSize="12"
               fill="#E85A8A"
               textAnchor="middle"
               fontWeight="bold"
             >
-              すみません
+              {currentAnimation.message}
             </text>
           </g>
         )}
       </svg>
 
       {/* Floating hearts animation when apologizing */}
-      {isApologizing && (
+      {showHearts && (
         <div className="absolute inset-0 pointer-events-none">
           <div className="animate-float-heart">
             <span className="text-pink-400 text-2xl absolute" style={{ left: '30%', top: '10%' }}>

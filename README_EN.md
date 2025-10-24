@@ -87,7 +87,7 @@ npm run dev
 
 # 4. Access the app
 # Frontend: http://localhost:3000
-# Backend: http://localhost:5000
+# Backend: http://localhost:5001
 ```
 
 For detailed instructions, see [Quick Start Guide](./docs/QUICK_START.md)

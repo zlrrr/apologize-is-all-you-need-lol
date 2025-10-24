@@ -50,7 +50,7 @@ Project structure created with:
 ### Test Results
 ```bash
 # Backend server test
-✅ Server started on http://localhost:5000
+✅ Server started on http://localhost:5001
 ✅ Health check API: {"status":"ok","message":"Backend server is running"}
 ✅ Test API: {"message":"API is working!","timestamp":"..."}
 
