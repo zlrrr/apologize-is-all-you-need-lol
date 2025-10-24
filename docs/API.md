@@ -5,7 +5,7 @@ Backend API for the Apologize Is All You Need application.
 ## Base URL
 
 ```
-http://localhost:5000/api
+http://localhost:5001/api
 ```
 
 ## Endpoints
@@ -188,7 +188,7 @@ Get all session IDs (for debugging).
 ### Example 1: Send a message with gentle style
 
 ```bash
-curl -X POST http://localhost:5000/api/chat/message \
+curl -X POST http://localhost:5001/api/chat/message \
   -H "Content-Type: application/json" \
   -d '{
     "message": "今天心情很不好",
@@ -199,7 +199,7 @@ curl -X POST http://localhost:5000/api/chat/message \
 ### Example 2: Continue a conversation
 
 ```bash
-curl -X POST http://localhost:5000/api/chat/message \
+curl -X POST http://localhost:5001/api/chat/message \
   -H "Content-Type: application/json" \
   -d '{
     "message": "还是感觉很难受",
@@ -211,5 +211,5 @@ curl -X POST http://localhost:5000/api/chat/message \
 ### Example 3: Get conversation history
 
 ```bash
-curl http://localhost:5000/api/chat/history?sessionId=your-session-id-here
+curl http://localhost:5001/api/chat/history?sessionId=your-session-id-here
 ```

@@ -57,7 +57,7 @@ npm run dev
 
 # 4. 访问应用
 # 前端: http://localhost:3000
-# 后端: http://localhost:5000
+# 后端: http://localhost:5001
 ```
 
 详细步骤请查看 [快速开始指南](./docs/QUICK_START.md)

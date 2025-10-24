@@ -115,7 +115,7 @@ lsof -ti:1234 | xargs kill -9
 
 ```bash
 # 检查后端
-curl http://localhost:5000/api/health
+curl http://localhost:5001/api/health
 
 # 检查Mock LM Studio
 curl http://localhost:1234/v1/models
@@ -226,7 +226,7 @@ npm run dev
 
 ```bash
 # 快速测试API
-curl -X POST http://localhost:5000/api/chat/message \
+curl -X POST http://localhost:5001/api/chat/message \
   -H "Content-Type: application/json" \
   -d '{"message": "测试消息", "style": "gentle"}'
 ```
