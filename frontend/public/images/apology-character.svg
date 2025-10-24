@@ -1,0 +1,65 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Japanese-style bowing character -->
+
+  <!-- Body (torso) -->
+  <ellipse cx="100" cy="120" rx="35" ry="45" fill="#FF6B9D" stroke="#E85A8A" stroke-width="2"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="70" r="30" fill="#FFE5E5" stroke="#E85A8A" stroke-width="2"/>
+
+  <!-- Hair (Japanese style) -->
+  <path d="M 70 65 Q 70 45 100 40 Q 130 45 130 65" fill="#2C3E50" stroke="#1A252F" stroke-width="2"/>
+  <circle cx="85" cy="55" r="8" fill="#2C3E50"/>
+  <circle cx="115" cy="55" r="8" fill="#2C3E50"/>
+
+  <!-- Face -->
+  <!-- Eyes (closed, apologetic) -->
+  <path d="M 88 70 Q 92 73 96 70" fill="none" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 104 70 Q 108 73 112 70" fill="none" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Blush -->
+  <ellipse cx="80" cy="78" rx="8" ry="4" fill="#FFB6C1" opacity="0.6"/>
+  <ellipse cx="120" cy="78" rx="8" ry="4" fill="#FFB6C1" opacity="0.6"/>
+
+  <!-- Mouth (apologetic smile) -->
+  <path d="M 92 82 Q 100 85 108 82" fill="none" stroke="#E85A8A" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Arms (in bowing position) -->
+  <g id="arms">
+    <!-- Left arm -->
+    <path d="M 70 115 Q 55 105 45 115" fill="none" stroke="#E85A8A" stroke-width="8" stroke-linecap="round"/>
+    <!-- Left hand -->
+    <circle cx="45" cy="115" r="6" fill="#FFE5E5" stroke="#E85A8A" stroke-width="1"/>
+
+    <!-- Right arm -->
+    <path d="M 130 115 Q 145 105 155 115" fill="none" stroke="#E85A8A" stroke-width="8" stroke-linecap="round"/>
+    <!-- Right hand -->
+    <circle cx="155" cy="115" r="6" fill="#FFE5E5" stroke="#E85A8A" stroke-width="1"/>
+  </g>
+
+  <!-- Legs -->
+  <g id="legs">
+    <!-- Left leg -->
+    <rect x="85" y="155" width="10" height="35" rx="5" fill="#FF6B9D" stroke="#E85A8A" stroke-width="2"/>
+    <!-- Left foot -->
+    <ellipse cx="90" cy="192" rx="8" ry="4" fill="#FFE5E5" stroke="#E85A8A" stroke-width="1"/>
+
+    <!-- Right leg -->
+    <rect x="105" y="155" width="10" height="35" rx="5" fill="#FF6B9D" stroke="#E85A8A" stroke-width="2"/>
+    <!-- Right foot -->
+    <ellipse cx="110" cy="192" rx="8" ry="4" fill="#FFE5E5" stroke="#E85A8A" stroke-width="1"/>
+  </g>
+
+  <!-- Sweat drops (showing nervousness/apology) -->
+  <g id="sweat" opacity="0.7">
+    <ellipse cx="75" cy="65" rx="3" ry="5" fill="#87CEEB"/>
+    <ellipse cx="125" cy="68" rx="3" ry="5" fill="#87CEEB"/>
+  </g>
+
+  <!-- Apology text bubble (optional) -->
+  <g id="speech-bubble" opacity="0.9">
+    <ellipse cx="140" cy="40" rx="30" ry="20" fill="white" stroke="#E85A8A" stroke-width="2"/>
+    <path d="M 125 48 L 115 55 L 120 48 Z" fill="white" stroke="#E85A8A" stroke-width="2"/>
+    <text x="140" y="45" font-family="Arial, sans-serif" font-size="12" fill="#E85A8A" text-anchor="middle">すみません</text>
+  </g>
+</svg>
